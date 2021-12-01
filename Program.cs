@@ -11,7 +11,8 @@ using WorkingWithLinQ_TestUseCases;
 
 // LinqWithArrayOfStrings();
 // LinqWithArrayOfExceptions();
-LinqWithSets();
+// LinqWithSets();
+FilterAndSort();
 
 void LinqWithArrayOfStrings()
 {
@@ -83,7 +84,13 @@ void FilterAndSort()
     using var db = new Northwind();
     var query = db.Products
         .Where(product => product.UnitPrice < 10M)
-        .OrderByDescending(product => product.UnitPrice);
+        .OrderByDescending(product => product.UnitPrice)
+        .Select(product => new
+        {
+            product.ProductID,
+            product.ProductName,
+            product.UnitPrice
+        });
     
     WriteLine("Products that cost less than $10: ");
     foreach (var item in query)
