@@ -12,7 +12,8 @@ using WorkingWithLinQ_TestUseCases;
 // LinqWithArrayOfStrings();
 // LinqWithArrayOfExceptions();
 // LinqWithSets();
-FilterAndSort();
+// FilterAndSort();
+JoinCategoriesAndProducts();
 
 void LinqWithArrayOfStrings()
 {
@@ -99,4 +100,25 @@ void FilterAndSort()
             item.ProductID, item.ProductName, item.UnitPrice);
     }
     WriteLine();
+}
+
+void JoinCategoriesAndProducts()
+{
+    using var db = new Northwind();
+    var queryJoin = db.Categories.Join(
+        inner: db.Products,
+        outerKeySelector: category => category.CategoryID,
+        innerKeySelector: product => product.CategoryID,
+        resultSelector: (c, p) => 
+            new { c.CategoryName, p.ProductName, p.ProductID }
+        )
+        .OrderBy(cp => cp.CategoryName);
+
+    foreach (var item in queryJoin)
+    {
+        WriteLine("{0}: {1} is in {2}.",
+            arg0: item.ProductID,
+            arg1: item.ProductName,
+            arg2: item.CategoryName);
+    }
 }
