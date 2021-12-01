@@ -13,7 +13,8 @@ using WorkingWithLinQ_TestUseCases;
 // LinqWithArrayOfExceptions();
 // LinqWithSets();
 // FilterAndSort();
-JoinCategoriesAndProducts();
+// JoinCategoriesAndProducts();
+GroupJoinCategoriesAndProducts();
 
 void LinqWithArrayOfStrings()
 {
@@ -120,5 +121,30 @@ void JoinCategoriesAndProducts()
             arg0: item.ProductID,
             arg1: item.ProductName,
             arg2: item.CategoryName);
+    }
+}
+
+void GroupJoinCategoriesAndProducts()
+{
+    using var db = new Northwind();
+    var queryGroup = db.Categories
+        .AsEnumerable()
+        .GroupJoin(
+        inner: db.Products,
+        outerKeySelector: category => category.CategoryID,
+        innerKeySelector: product => product.CategoryID,
+        resultSelector: (category, matchingProducts) => new
+        {
+            category.CategoryName,
+            Products = matchingProducts.OrderBy(p => p.ProductName)
+        });
+
+    foreach (var item in queryGroup)
+    {
+        WriteLine("{0} has {1} products.",
+            arg0: item.CategoryName,
+            arg1: item.Products.Count());
+
+        foreach (var product in item.Products) WriteLine($" {product.ProductName}");
     }
 }
